@@ -46,7 +46,7 @@ function Geometries() {
     {
       position: [-1.4, 2, -4],
       r: 0.6,
-      geometry: new THREE.DodecahedronGeometry(1.5),
+      geometry: new THREE.OctahedronGeometry(1.5),
     },
     {
       position: [-0.8, -0.75, 5],
