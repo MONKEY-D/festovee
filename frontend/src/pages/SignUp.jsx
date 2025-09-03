@@ -176,7 +176,10 @@ function SignUp() {
             </button>
           </div>
           <div className="text-right mt-1">
-            <button className="text-sm text-blue-500 font-bold hover:underline">
+            <button
+              className="text-sm text-blue-500 font-bold hover:underline"
+              onClick={() => navigate("/forgot-password")}
+            >
               Forgot password?
             </button>
           </div>
@@ -258,11 +261,11 @@ function SignUp() {
         transform: translateY(0);
       }
       50% {
-        transform: translateY(20px);
+        transform: translateY(50px);
       }
     }
     .animate-bounce-slow {
-      animation: bounce-slow 8s ease-in-out infinite;
+      animation: bounce-slow 5s ease-in-out infinite;
     }
   `}
       </style>
