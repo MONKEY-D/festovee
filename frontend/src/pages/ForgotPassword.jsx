@@ -5,9 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import Swal from "sweetalert2";
+import Loading from "../components/Loading";
 
 const ForgotPassword = () => {
   const borderColor = "#ddd";
+  const primaryColor = "#ff4d2d";
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
@@ -17,6 +20,7 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const formRef = useRef(null);
 
@@ -45,50 +49,114 @@ const ForgotPassword = () => {
 
   // Step 1: Send OTP
   const handleSendOtp = async () => {
+    if (!email) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Email",
+        text: "Please enter your email address.",
+        confirmButtonColor: primaryColor,
+      });
+    }
     try {
+      setLoading(true);
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
         { email },
         { withCredentials: true }
       );
       console.log("Send OTP response:", result.data);
+      Swal.fire({
+        icon: "success",
+        title: "OTP Sent",
+        text: "An OTP has been sent to your email.",
+        confirmButtonColor: primaryColor,
+      });
       setStep(2);
     } catch (error) {
       console.error("Error sending OTP:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to Send OTP",
+        text: error.response?.data?.message || "Please try again later.",
+        confirmButtonColor: primaryColor,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   // Step 2: Verify OTP
   const handleVerifyOtp = async () => {
+    if (!otp) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing OTP",
+        text: "Please enter the OTP sent to your email.",
+        confirmButtonColor: primaryColor,
+      });
+    }
     try {
+      setLoading(true);
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
         { email, otp },
         { withCredentials: true }
       );
       console.log("Verify OTP response:", result.data);
+      Swal.fire({
+        icon: "success",
+        title: "OTP Verified",
+        text: "You can now reset your password.",
+        confirmButtonColor: primaryColor,
+      });
       setStep(3);
     } catch (error) {
       console.error("Error verifying OTP:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Invalid OTP",
+        text: error.response?.data?.message || "Please try again.",
+        confirmButtonColor: primaryColor,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   // Step 3: Reset Password
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+      return Swal.fire({
+        icon: "warning",
+        title: "Password Mismatch",
+        text: "New password and confirm password do not match.",
+        confirmButtonColor: primaryColor,
+      });
     }
     try {
+      setLoading(true);
       const result = await axios.post(
         `${serverUrl}/api/auth/reset-password`,
         { email, newPassword },
         { withCredentials: true }
       );
       console.log("Reset Password response:", result.data);
-      navigate("/signin");
+      Swal.fire({
+        icon: "success",
+        title: "Password Reset Successful",
+        text: "You can now log in with your new password.",
+        confirmButtonColor: primaryColor,
+      }).then(() => navigate("/signin"));
     } catch (error) {
       console.error("Error resetting password:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Reset Failed",
+        text: error.response?.data?.message || "Please try again later.",
+        confirmButtonColor: primaryColor,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +165,13 @@ const ForgotPassword = () => {
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
       style={{ backgroundColor: "#fff9f6" }}
     >
+      {/* Loader */}
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70">
+          <Loading />
+        </div>
+      )}
+
       {/* Floating Particles Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-96 h-96 bg-pink-300 rounded-full opacity-30 animate-bounce-slow top-[-50px] left-[-50px]"></div>
@@ -147,7 +222,7 @@ const ForgotPassword = () => {
             />
             <button
               className="mt-3 w-full py-2 px-4 rounded-lg font-medium shadow-lg hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
-              style={{ backgroundColor: "#ff4d2d", color: "#fff" }}
+              style={{ backgroundColor: primaryColor, color: "#fff" }}
               onClick={handleSendOtp}
             >
               Send Reset OTP
@@ -169,7 +244,7 @@ const ForgotPassword = () => {
             />
             <button
               className="mt-3 w-full py-2 px-4 rounded-lg font-medium shadow-lg hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
-              style={{ backgroundColor: "#ff4d2d", color: "#fff" }}
+              style={{ backgroundColor: primaryColor, color: "#fff" }}
               onClick={handleVerifyOtp}
             >
               Verify OTP
@@ -222,7 +297,7 @@ const ForgotPassword = () => {
 
             <button
               className="mt-3 w-full py-2 px-4 rounded-lg font-medium shadow-lg hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
-              style={{ backgroundColor: "#ff4d2d", color: "#fff" }}
+              style={{ backgroundColor: primaryColor, color: "#fff" }}
               onClick={handleResetPassword}
             >
               Reset Password

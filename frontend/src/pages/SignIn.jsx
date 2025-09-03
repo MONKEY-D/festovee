@@ -9,6 +9,7 @@ import { serverUrl } from "../App";
 import Swal from "sweetalert2";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import Loading from "../components/Loading";
 
 function SignIn() {
   const primaryColor = "#ff4d2d";
@@ -18,6 +19,7 @@ function SignIn() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ fixed typo
 
   // 🔹 Handle SignIn
   const handleSignIn = async () => {
@@ -39,6 +41,8 @@ function SignIn() {
     }
 
     try {
+      setLoading(true); // show loader
+
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
         { email, password },
@@ -55,7 +59,7 @@ function SignIn() {
       });
 
       console.log(result);
-      navigate("/"); // redirect after success
+      navigate("/");
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -66,6 +70,8 @@ function SignIn() {
         confirmButtonColor: "#ff4d2d",
       });
       console.error(error);
+    } finally {
+      setLoading(false); // hide loader
     }
   };
 
@@ -99,6 +105,8 @@ function SignIn() {
     const result = await signInWithPopup(auth, provider);
 
     try {
+      setLoading(true); // show loader
+
       const { data } = await axios.post(
         `${serverUrl}/api/auth/google-auth`,
         {
@@ -122,6 +130,8 @@ function SignIn() {
         text: "Unable to sign up with Google. Please try again.",
         confirmButtonColor: primaryColor,
       });
+    } finally {
+      setLoading(false); // hide loader
     }
   };
 
@@ -130,6 +140,9 @@ function SignIn() {
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
       style={{ backgroundColor: "#fff9f6" }}
     >
+      {/* Loader */}
+      {loading && <Loading message="Signing you in..." />}
+
       {/* Floating Background Blobs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-96 h-96 bg-pink-300 rounded-full opacity-30 animate-bounce-slow top-[-50px] left-[-50px]"></div>
@@ -213,7 +226,7 @@ function SignIn() {
           Sign In
         </button>
 
-        {/* Google SignIn (placeholder) */}
+        {/* Google SignIn */}
         <button
           className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-xl hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
           style={{ backgroundColor: "#fff", border: "2px solid #ddd" }}

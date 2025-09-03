@@ -9,6 +9,7 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import Swal from "sweetalert2";
+import Loading from "../components/Loading";
 
 function SignUp() {
   const primaryColor = "#ff4d2d";
@@ -21,6 +22,7 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ fixed to boolean
 
   const handleSignUp = async () => {
     if (!fullName || !email || !password || !mobile) {
@@ -32,6 +34,8 @@ function SignUp() {
       });
       return;
     }
+
+    setLoading(true); // show loader
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
@@ -62,6 +66,8 @@ function SignUp() {
           "Something went wrong. Please try again.",
         confirmButtonColor: primaryColor,
       });
+    } finally {
+      setLoading(false); // hide loader
     }
   };
 
@@ -70,7 +76,6 @@ function SignUp() {
   // GSAP animations
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Bounce the entire form
       gsap.from(formRef.current, {
         y: -50,
         opacity: 0,
@@ -78,7 +83,6 @@ function SignUp() {
         ease: "bounce.out",
       });
 
-      // Staggered fade-in for fields
       gsap.from(".form-field", {
         y: 30,
         opacity: 0,
@@ -87,15 +91,6 @@ function SignUp() {
         ease: "power3.out",
         delay: 0.2,
       });
-
-      // Button pop-in effect
-      // gsap.from(".submit-btn", {
-      //   scale: 0.8,
-      //   opacity: 0,
-      //   duration: 0.8,
-      //   delay: 1,
-      //   ease: "back.out(1.7)",
-      // });
     }, formRef);
 
     return () => ctx.revert();
@@ -113,9 +108,10 @@ function SignUp() {
     }
 
     const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-
+    setLoading(true); // show loader
     try {
+      const result = await signInWithPopup(auth, provider);
+
       const { data } = await axios.post(
         `${serverUrl}/api/auth/google-auth`,
         {
@@ -127,7 +123,6 @@ function SignUp() {
         { withCredentials: true }
       );
       console.log(data);
-      
 
       Swal.fire({
         icon: "success",
@@ -143,6 +138,8 @@ function SignUp() {
         text: "Unable to sign in with Google. Please try again.",
         confirmButtonColor: primaryColor,
       });
+    } finally {
+      setLoading(false); // hide loader
     }
   };
 
@@ -175,12 +172,6 @@ function SignUp() {
 
         {/* Title */}
         <div className="text-center form-field">
-          {/* <h1
-            className="text-3xl font-bold mb-2"
-            style={{ color: primaryColor }}
-          >
-            FESTOVEE
-          </h1> */}
           <p className="text-gray-800 font-extrabold">
             Get started with Festovee
           </p>
@@ -300,16 +291,25 @@ function SignUp() {
             color: "#fff",
           }}
           onClick={handleSignUp}
+          disabled={loading}
         >
-          Sign Up
+          {loading ? <Loading size={20} color="#fff" /> : "Sign Up"}
         </button>
+
         <button
           className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-xl hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
           style={{ backgroundColor: "#fff", border: "2px solid #ddd" }}
           onClick={handleGoogleAuth}
+          disabled={loading}
         >
-          <SiGoogle size={20} color="#ff4d2d" />
-          Sign Up with Google
+          {loading ? (
+            <Loading size={20} color="#ff4d2d" />
+          ) : (
+            <>
+              <SiGoogle size={20} color="#ff4d2d" />
+              Sign Up with Google
+            </>
+          )}
         </button>
 
         {/* Sign In Link */}
