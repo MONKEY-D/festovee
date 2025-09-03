@@ -6,6 +6,9 @@ import { SiGoogle } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
+import Swal from "sweetalert2";
 
 function SignUp() {
   const primaryColor = "#ff4d2d";
@@ -20,6 +23,15 @@ function SignUp() {
   const [mobile, setMobile] = useState("");
 
   const handleSignUp = async () => {
+    if (!fullName || !email || !password || !mobile) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Information",
+        text: "Please fill in all fields before signing up.",
+        confirmButtonColor: primaryColor,
+      });
+      return;
+    }
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
@@ -33,8 +45,23 @@ function SignUp() {
         { withCredentials: true }
       );
       console.log(result);
+
+      Swal.fire({
+        icon: "success",
+        title: "Account Created",
+        text: "Your account has been created successfully!",
+        confirmButtonColor: primaryColor,
+      }).then(() => navigate("/signin"));
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Sign Up Failed",
+        text:
+          error?.response?.data?.message ||
+          "Something went wrong. Please try again.",
+        confirmButtonColor: primaryColor,
+      });
     }
   };
 
@@ -73,6 +100,51 @@ function SignUp() {
 
     return () => ctx.revert();
   }, []);
+
+  const handleGoogleAuth = async () => {
+    if (!mobile) {
+      Swal.fire({
+        icon: "info",
+        title: "Mobile Number Required",
+        text: "Enter your mobile number then sign in with Google!",
+        confirmButtonColor: primaryColor,
+      });
+      return;
+    }
+
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+
+    try {
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        {
+          fullName: result.user.displayName,
+          email: result.user.email,
+          role,
+          mobile,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      
+
+      Swal.fire({
+        icon: "success",
+        title: "Google Sign-In Successful",
+        text: "Welcome to Festovee!",
+        confirmButtonColor: primaryColor,
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Google Sign-In Failed",
+        text: "Unable to sign in with Google. Please try again.",
+        confirmButtonColor: primaryColor,
+      });
+    }
+  };
 
   return (
     <div
@@ -234,6 +306,7 @@ function SignUp() {
         <button
           className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-xl hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
           style={{ backgroundColor: "#fff", border: "2px solid #ddd" }}
+          onClick={handleGoogleAuth}
         >
           <SiGoogle size={20} color="#ff4d2d" />
           Sign Up with Google

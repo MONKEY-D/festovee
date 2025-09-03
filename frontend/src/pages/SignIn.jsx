@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import gsap from "gsap";
-import logo from "../assets/FESTOVEE_LOGO_ONLY.png"; // Import the logo
+import logo from "../assets/FESTOVEE_LOGO_ONLY.png";
 import { SiGoogle } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import Swal from "sweetalert2";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 
 function SignIn() {
-  // const primaryColor = "#ff4d2d";
+  const primaryColor = "#ff4d2d";
   const borderColor = "#ddd";
 
   const [showPassword, setShowPassword] = useState(false);
@@ -16,19 +19,53 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // 🔹 Handle SignIn
   const handleSignIn = async () => {
+    if (!email) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Email",
+        text: "Please enter your email address before signing in.",
+        confirmButtonColor: "#ff4d2d",
+      });
+    }
+    if (!password) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Password",
+        text: "Please enter your password before signing in.",
+        confirmButtonColor: "#ff4d2d",
+      });
+    }
+
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
-        {
-          email,
-          password,
-        },
+        { email, password },
         { withCredentials: true }
       );
+
+      Swal.fire({
+        icon: "success",
+        title: "Login Successful",
+        text: "Welcome back to Festovee!",
+        confirmButtonColor: "#ff4d2d",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
       console.log(result);
+      navigate("/"); // redirect after success
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text:
+          error.response?.data?.message ||
+          "Invalid credentials. Please try again.",
+        confirmButtonColor: "#ff4d2d",
+      });
+      console.error(error);
     }
   };
 
@@ -37,7 +74,6 @@ function SignIn() {
   // GSAP animations
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Bounce the entire form
       gsap.from(formRef.current, {
         y: -50,
         opacity: 0,
@@ -45,7 +81,6 @@ function SignIn() {
         ease: "bounce.out",
       });
 
-      // Staggered fade-in for fields
       gsap.from(".form-field", {
         y: 30,
         opacity: 0,
@@ -54,33 +89,55 @@ function SignIn() {
         ease: "power3.out",
         delay: 0.2,
       });
-
-      // Button pop-in effect
-      // gsap.from(".submit-btn", {
-      //   scale: 0.8,
-      //   opacity: 0,
-      //   duration: 0.8,
-      //   delay: 1,
-      //   ease: "back.out(1.7)",
-      // });
     }, formRef);
 
     return () => ctx.revert();
   }, []);
+
+  const handleGoogleAuth = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+
+    try {
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        {
+          email: result.user.email,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+
+      Swal.fire({
+        icon: "success",
+        title: "Google Sign-In Successful",
+        text: "Welcome to Festovee!",
+        confirmButtonColor: primaryColor,
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Google Sign-Up Failed",
+        text: "Unable to sign up with Google. Please try again.",
+        confirmButtonColor: primaryColor,
+      });
+    }
+  };
 
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
       style={{ backgroundColor: "#fff9f6" }}
     >
-      {/* Floating Particles / Blobs Background */}
+      {/* Floating Background Blobs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-96 h-96 bg-pink-300 rounded-full opacity-30 animate-bounce-slow top-[-50px] left-[-50px]"></div>
         <div className="absolute w-80 h-80 bg-yellow-300 rounded-full opacity-30 animate-bounce-slow top-[150px] right-[-60px]"></div>
         <div className="absolute w-72 h-72 bg-green-300 rounded-full opacity-30 animate-bounce-slow bottom-[100px] left-[80px]"></div>
       </div>
 
-      {/* SignUp Form */}
+      {/* SignIn Form */}
       <div
         ref={formRef}
         className="relative z-10 bg-[#faf9f6] rounded-xl shadow-2xl w-full max-w-md p-5 space-y-3"
@@ -97,13 +154,7 @@ function SignIn() {
 
         {/* Title */}
         <div className="text-center form-field">
-          {/* <h1
-            className="text-3xl font-bold mb-2"
-            style={{ color: primaryColor }}
-          >
-            FESTOVEE
-          </h1> */}
-          <p className="text-gray-800 font-extrabold">SignIn to Festovee</p>
+          <p className="text-gray-800 font-extrabold">Sign In to Festovee</p>
         </div>
 
         {/* Email */}
@@ -149,7 +200,7 @@ function SignIn() {
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* Sign In Button */}
         <button
           className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
           style={{
@@ -161,17 +212,20 @@ function SignIn() {
         >
           Sign In
         </button>
+
+        {/* Google SignIn (placeholder) */}
         <button
           className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-xl hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
           style={{ backgroundColor: "#fff", border: "2px solid #ddd" }}
+          onClick={handleGoogleAuth}
         >
           <SiGoogle size={20} color="#ff4d2d" />
           Sign In with Google
         </button>
 
-        {/* Sign In Link */}
+        {/* Switch to SignUp */}
         <div className="text-center mt-2">
-          <p className="text-gray-600" onClick={() => navigate("/signup")}>
+          <p className="text-gray-600">
             Don't have an account?{" "}
             <Link
               to="/signup"
@@ -183,21 +237,17 @@ function SignIn() {
         </div>
       </div>
 
-      {/* Animation Styles */}
+      {/* Background Animation */}
       <style>
         {`
-    @keyframes bounce-slow {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(50px);
-      }
-    }
-    .animate-bounce-slow {
-      animation: bounce-slow 5s ease-in-out infinite;
-    }
-  `}
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(50px); }
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 5s ease-in-out infinite;
+        }
+      `}
       </style>
     </div>
   );
