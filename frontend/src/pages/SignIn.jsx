@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import Loading from "../components/Loading";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 function SignIn() {
   const primaryColor = "#ff4d2d";
@@ -19,7 +21,8 @@ function SignIn() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ fixed typo
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   // 🔹 Handle SignIn
   const handleSignIn = async () => {
@@ -48,6 +51,7 @@ function SignIn() {
         { email, password },
         { withCredentials: true }
       );
+      dispatch(setUserData(result.data));
 
       Swal.fire({
         icon: "success",
@@ -58,7 +62,6 @@ function SignIn() {
         showConfirmButton: false,
       });
 
-      console.log(result);
       navigate("/");
     } catch (error) {
       Swal.fire({
@@ -114,7 +117,7 @@ function SignIn() {
         },
         { withCredentials: true }
       );
-      console.log(data);
+      dispatch(setUserData(data));
 
       Swal.fire({
         icon: "success",

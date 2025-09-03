@@ -10,6 +10,8 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import Swal from "sweetalert2";
 import Loading from "../components/Loading";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 function SignUp() {
   const primaryColor = "#ff4d2d";
@@ -22,7 +24,8 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ fixed to boolean
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSignUp = async () => {
     if (!fullName || !email || !password || !mobile) {
@@ -48,7 +51,7 @@ function SignUp() {
         },
         { withCredentials: true }
       );
-      console.log(result);
+      dispatch(setUserData(result.data));
 
       Swal.fire({
         icon: "success",
@@ -108,7 +111,7 @@ function SignUp() {
     }
 
     const provider = new GoogleAuthProvider();
-    setLoading(true); // show loader
+    setLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
 
@@ -122,7 +125,7 @@ function SignUp() {
         },
         { withCredentials: true }
       );
-      console.log(data);
+      dispatch(setUserData(data));
 
       Swal.fire({
         icon: "success",

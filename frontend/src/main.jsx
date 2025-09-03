@@ -3,10 +3,14 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import CustomCursor from "./components/CustomCursor.jsx";
+import { Provider } from "react-redux";
+import { store } from "./redux/store.js";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-  <CustomCursor/>
-    <App />
+    <Provider store={store}>
+      <CustomCursor />
+      <App />
+    </Provider>
   </BrowserRouter>
 );
