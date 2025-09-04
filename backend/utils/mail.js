@@ -19,7 +19,7 @@ export const sendOtpMail = async (to, otp) => {
     html: `
       <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:30px; text-align:center;">
         <div style="background:#ffffff; max-width:500px; margin:auto; border-radius:10px; padding:30px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-          <img src="https://ibb.co/3Y1MJjGY" alt="Festovee Logo" style="width:80px; height:auto; margin-bottom:20px;" />
+          <img src="https://i.ibb.co/WpnPTMqp/FESTOVEE-LOGO-fonts-box-transparent.png" alt="Festovee Logo" style="width:100px; height:auto; margin-bottom:0px;" />
           <h2 style="color:#ff4d2d; margin-bottom:10px;">Password Reset Request</h2>
           <p style="color:#333; font-size:15px; margin-bottom:20px;">
             Hi there,<br /><br />

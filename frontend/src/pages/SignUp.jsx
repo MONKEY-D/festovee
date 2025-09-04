@@ -289,7 +289,7 @@ function SignUp() {
 
         {/* Submit Button */}
         <button
-          className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
+          className="w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-xl active:shadow-inner transform active:translate-y-0.5 transition-all duration-150"
           style={{
             backgroundColor: "#ff4d2d",
             border: "1px solid #ddd",
