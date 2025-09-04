@@ -82,7 +82,7 @@ const UserDashboard = () => {
         </div>
 
         {/* My Orders button (Desktop) */}
-        <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium">
+        <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium cursor-pointer">
           My Orders
         </button>
 
@@ -97,7 +97,7 @@ const UserDashboard = () => {
             <DropdownMenuItem className="font-semibold">
               {userData?.fullName}
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-[#ff4d2d] font-semibold cursor-pointer">
+            <DropdownMenuItem className="text-[#ff4d2d] font-semibold cursor-pointer md:hidden">
               My Orders
             </DropdownMenuItem>
             <DropdownMenuItem
