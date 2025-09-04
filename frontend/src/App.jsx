@@ -2,12 +2,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword";
-import useGetCurrentUser from "./hooks/useGetCurrentUser";
+import useGetCurrentUser from "./hooks/useGetCurrentUser.jsx";
 import { useSelector } from "react-redux";
 import Home from "./pages/Home";
+import useGetCity from "./hooks/useGetCity";
 export const serverUrl = "http://localhost:8000";
 
 const App = () => {
+  useGetCity()
   useGetCurrentUser();
   const { userData } = useSelector((state) => state.user);
   return (
@@ -23,7 +25,7 @@ const App = () => {
       <Route
         path="/forgot-password"
         element={!userData ? <ForgotPassword /> : <Navigate to={"/"} />}
-      />
+    />
       <Route
         path="/"
         element={userData ? <Home /> : <Navigate to={"/signin"} />}

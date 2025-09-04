@@ -12,6 +12,8 @@ import { auth } from "../../firebase";
 import Loading from "../components/Loading";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
+import { FcGoogle } from "react-icons/fc";
+import { FaGoogle } from "react-icons/fa";
 
 function SignIn() {
   const primaryColor = "#ff4d2d";
@@ -231,12 +233,18 @@ function SignIn() {
 
         {/* Google SignIn */}
         <button
-          className="w-full py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2 shadow-xl hover:shadow-xl active:shadow-md transform active:translate-y-1 transition-all duration-150"
-          style={{ backgroundColor: "#fff", border: "2px solid #ddd" }}
+          className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium shadow-sm hover:shadow-xl active:shadow-inner transition-all duration-100 transform active:translate-y-0.5 bg-white border border-gray-300 text-gray-700"
           onClick={handleGoogleAuth}
+          disabled={loading}
         >
-          <SiGoogle size={20} color="#ff4d2d" />
-          Sign In with Google
+          {loading ? (
+            <Loading size={20} color="#ff4d2d" />
+          ) : (
+            <>
+              <FcGoogle size={25} />
+              <span className="text-sm md:text-base">Sign Up with Google</span>
+            </>
+          )}
         </button>
 
         {/* Switch to SignUp */}
