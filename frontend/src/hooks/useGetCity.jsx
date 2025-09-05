@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCity } from "../redux/userSlice";
+import {
+  setCurrentAddress,
+  setCurrentCity,
+  setCurrentState,
+} from "../redux/userSlice";
 import axios from "axios";
 
 const useGetCity = () => {
@@ -14,7 +18,7 @@ const useGetCity = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          console.log("Position:", position);
+          // console.log("Position:", position);
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
 
@@ -23,7 +27,7 @@ const useGetCity = () => {
           );
 
           const place = result?.data?.results?.[0];
-          console.log("Geoapify response:", place);
+          // console.log("Geoapify response:", place);
 
           const detectedCity =
             place?.city ||
@@ -33,7 +37,13 @@ const useGetCity = () => {
             place?.state ||
             "Unknown City";
 
-          dispatch(setCity(detectedCity));
+          const detectedState = place?.state || "Unknown State";
+
+          const detectedAddress = place?.formatted || "unknown Address";
+
+          dispatch(setCurrentCity(detectedCity));
+          dispatch(setCurrentState(detectedState));
+          dispatch(setCurrentAddress(detectedAddress));
         } catch (err) {
           console.error("Error fetching city:", err);
         }
