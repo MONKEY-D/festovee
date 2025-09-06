@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react"; // back icon
+import { ArrowLeft } from "lucide-react";
 import logo from "../assets/FESTOVEE_LOGO_ONLY.png";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { setMyShopData } from "../redux/ownerSlice";
+import Swal from "sweetalert2";
+import Loading from "../components/Loading";
 
 const CreateEditShop = () => {
   const navigate = useNavigate();
@@ -21,19 +23,21 @@ const CreateEditShop = () => {
   const [address, setAddress] = useState(myShopData?.address || currentAddress);
   const [city, setCity] = useState(myShopData?.city || currentCity);
   const [state, setState] = useState(myShopData?.state || currentState);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   // Image selection handler
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setBackendImage(file); // Save for uploading
-      setFrontendImage(URL.createObjectURL(file)); // Preview
+      setBackendImage(file);
+      setFrontendImage(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -44,15 +48,35 @@ const CreateEditShop = () => {
       if (backendImage) {
         formData.append("image", backendImage);
       }
+
       const result = await axios.post(
         `${serverUrl}/api/shop/create-edit`,
         formData,
         { withCredentials: true }
       );
+
       dispatch(setMyShopData(result.data));
-      console.log(result.data);
+
+      Swal.fire({
+        icon: "success",
+        title: myShopData ? "Shop updated!" : "Shop created!",
+        text: "Redirecting to home...",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message || "Something went wrong!",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,7 +117,7 @@ const CreateEditShop = () => {
         </div>
 
         <h2 className="text-xl font-semibold text-center text-gray-800">
-          Create / Edit Shop
+          {myShopData ? "Edit Shop" : "Add Shop"}
         </h2>
 
         {/* Shop Image Upload */}
@@ -191,9 +215,16 @@ const CreateEditShop = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-[#ff4d2d] text-white py-2 rounded-lg shadow-md hover:bg-[#e04325] transition-colors"
+          className="w-full bg-[#ff4d2d] text-white py-2 rounded-lg shadow-md hover:bg-[#e04325] transition-colors flex items-center justify-center"
+          disabled={loading}
         >
-          Save Shop
+          {loading ? (
+            <Loading type="spinner" size={24} color="#fff" />
+          ) : myShopData ? (
+            "Save Edits"
+          ) : (
+            "Save Shop"
+          )}
         </button>
       </form>
 

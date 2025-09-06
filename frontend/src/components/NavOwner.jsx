@@ -16,7 +16,7 @@ import {
 
 const NavOwner = () => {
   const { userData } = useSelector((state) => state.user);
-  const { myShopData } = useSelector((state) => state.owner);
+  // const { myShopData } = useSelector((state) => state.owner);
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
@@ -40,7 +40,7 @@ const NavOwner = () => {
       />
 
       {/* Center Add Product Button */}
-      {myShopData && (
+      {/* {myShopData && (
         <button
           className="flex items-center gap-2 px-4 py-2 bg-[#ff4d2d] text-white font-medium rounded-xl shadow-md hover:bg-[#e04325] transition-all duration-200 
                    text-sm sm:text-base"
@@ -48,7 +48,7 @@ const NavOwner = () => {
           <AiOutlinePlus size={20} />
           <span className="hidden sm:inline">Add Product</span>
         </button>
-      )}
+      )} */}
 
       {/* Actions */}
       <div className="flex items-center gap-4">

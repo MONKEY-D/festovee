@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import useGetCity from "./hooks/useGetCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 import CreateEditShop from "./pages/CreateEditShop";
+import AddProductForm from "./pages/AddProductForm";
+import EditItem from "./pages/EditItem";
 export const serverUrl = "http://localhost:8000";
 
 const App = () => {
@@ -36,6 +38,14 @@ const App = () => {
       <Route
         path="/create-edit-shop"
         element={userData ? <CreateEditShop /> : <Navigate to={"/"} />}
+      />
+      <Route
+        path="/add-product"
+        element={userData ? <AddProductForm /> : <Navigate to={"/"} />}
+      />
+      <Route
+        path="/edit-item/:itemId"
+        element={userData ? <EditItem /> : <Navigate to={"/"} />}
       />
     </Routes>
   );

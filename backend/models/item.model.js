@@ -38,6 +38,22 @@ const itemSchema = new mongoose.Schema(
       min: 0,
       required: true,
     },
+    stock: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    unit: {
+      type: String,
+      enum: ["piece", "kg", "box"],
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );

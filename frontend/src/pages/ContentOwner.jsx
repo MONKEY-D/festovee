@@ -6,6 +6,8 @@ const ContentOwner = () => {
   const { myShopData } = useSelector((state) => state.owner);
   const navigate = useNavigate();
 
+  if (myShopData) return null;
+
   return (
     <div className="w-full flex flex-col lg:flex-row items-center justify-between max-w-6xl mx-auto px-6 py-16 gap-10">
       {/* Text Section */}
