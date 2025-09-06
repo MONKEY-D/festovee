@@ -106,7 +106,6 @@ const AddProductForm = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#fff9f6] relative overflow-hidden">
-      {loading && <Loader />} {/* Loader */}
       {/* Background Blobs */}
       <div className="absolute inset-0">
         <div className="absolute w-96 h-96 bg-pink-300 rounded-full opacity-30 top-[-50px] left-[-50px] animate-bounce-slow"></div>
@@ -312,9 +311,11 @@ const AddProductForm = () => {
         {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-[#ff4d2d] text-white py-2 rounded-lg shadow-md hover:bg-[#e04325] transition-colors"
+          className="w-full bg-[#ff4d2d] text-white py-2 rounded-lg shadow-md hover:bg-[#e04325] transition-colors flex items-center justify-center gap-2"
+          disabled={loading}
         >
-          Add Product
+          {loading && <Loader size={20} />}
+          {loading ? "Adding..." : "Add Product"}
         </button>
       </form>
       <style>{`

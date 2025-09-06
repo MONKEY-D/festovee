@@ -13,11 +13,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 const NavOwner = () => {
   const { userData } = useSelector((state) => state.user);
-  // const { myShopData } = useSelector((state) => state.owner);
+  const { myShopData } = useSelector((state) => state.owner);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -40,29 +42,30 @@ const NavOwner = () => {
       />
 
       {/* Center Add Product Button */}
-      {/* {myShopData && (
+      {myShopData?.items?.length > 0 && (
         <button
           className="flex items-center gap-2 px-4 py-2 bg-[#ff4d2d] text-white font-medium rounded-xl shadow-md hover:bg-[#e04325] transition-all duration-200 
                    text-sm sm:text-base"
+          onClick={() => navigate("/add-product")}
         >
           <AiOutlinePlus size={20} />
           <span className="hidden sm:inline">Add Product</span>
         </button>
-      )} */}
+      )}
 
       {/* Actions */}
       <div className="flex items-center gap-4">
         {/* My Orders button (Responsive) */}
-        <div className="relative">
+        {/* <div className="relative">
           <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#ff4d2d]/15 hover:bg-[#ff4d2d]/25 text-[#ff4d2d] text-sm font-medium cursor-pointer">
             <FiPackage size={20} />
             <span className="hidden md:inline">My Orders</span>
           </button>
-          {/* Badge */}
+          
           <span className="absolute -right-2 -top-2 w-5 h-5 text-xs font-bold flex items-center justify-center text-white bg-[#ff4d2d] rounded-full">
             0
           </span>
-        </div>
+        </div> */}
 
         {/* User Avatar + Dropdown */}
         <DropdownMenu>

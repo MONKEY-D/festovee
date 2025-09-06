@@ -1,8 +1,39 @@
+import { setMyShopData } from "../redux/ownerSlice";
+import { serverUrl } from "../App";
+import axios from "axios";
 import { FaPen, FaTrashAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const OwnerItemCard = ({ data }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleDelete = async () => {
+    try {
+      const result = await axios.get(
+        `${serverUrl}/api/item/delete/${data._id}`,
+        { withCredentials: true }
+      );
+
+      dispatch(setMyShopData(result.data));
+      Swal.fire({
+        icon: "success",
+        title: "Product Removed",
+        text: `${data.name} has been successfully removed.`,
+        confirmButtonColor: "#ff4d2d",
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message || "Something went wrong!",
+        confirmButtonColor: "#ff4d2d",
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col sm:flex-row bg-white rounded-lg shadow-md overflow-hidden border border-[#ff4d2d] hover:shadow-lg transition-shadow duration-300">
@@ -36,7 +67,10 @@ const OwnerItemCard = ({ data }) => {
             <FaPen />
             <span className="text-sm hidden sm:inline">Edit</span>
           </button>
-          <button className="flex items-center justify-center gap-1 p-2 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-200">
+          <button
+            className="flex items-center justify-center gap-1 p-2 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-200"
+            onClick={handleDelete}
+          >
             <FaTrashAlt />
             <span className="text-sm hidden sm:inline">Delete</span>
           </button>
